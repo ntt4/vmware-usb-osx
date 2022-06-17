@@ -2,7 +2,7 @@ devices:
 	diskutil list
 
 esxi.img.dmg:
-	hdiutil convert -format UDRW -o esxi.img esxi.iso
+	hdiutil convert exsi.iso -format UDRW -o esxi.img
 
 vmware: esxi.img.dmg
 	# Format USB device as a bootable MS-DOS volume
@@ -11,9 +11,12 @@ vmware: esxi.img.dmg
 	# Mount USB device to add syslinux.cfg
 	mkdir -p source
 	mkdir -p target
-	hdiutil mount esxi.iso -mountpoint ./source
+	hdiutil attach ./exsi.iso -mountroot ./source
 	cp -r source/ /Volumes/ESXI/
 	cp syslinux.cfg /Volumes/ESXI/
-	hdiutil eject ./source
+	hdiutil detach ./source/*
 	diskutil unmountDisk /dev/disk$(DISK)
 	diskutil eject /dev/disk$(DISK)
+	rm -rf ./source
+	rm -rf ./target
+	rm ./exsi.img.dmg
